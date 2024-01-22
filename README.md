@@ -9,6 +9,8 @@ To get started:
 
 git clone https://github.com/Khagendra01/Kanun_GPT
 
+we can document this better if we collab!
+
 ///
 
 ////
