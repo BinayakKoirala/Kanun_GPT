@@ -1,13 +1,21 @@
 from flask import Flask, request, jsonify, render_template
-import os
-import json
-from langchain import PromptTemplate, LLMChain
-from langchain.llms import CTransformers
+import langchain_core
+from langchain_community.llms import CTransformers
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain.chains import RetrievalQA
-from langchain.embeddings import HuggingFaceBgeEmbeddings
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
+
+model_name = "BAAI/bge-large-en"
+model_kwargs = {'device': 'cpu'}
+encode_kwargs = {'normalize_embeddings': True}
+hf = HuggingFaceBgeEmbeddings(
+    model_name=model_name,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs
+)
+
 
 app = Flask(__name__)
 
@@ -27,7 +35,7 @@ llm = CTransformers(
 print("LLM Initialized....")
 
 prompt_template = """Use the following pieces of information to answer the user's question.
-You are agent for Nepal life insurance(NLIC), answer the question accordingly. 
+You are agent for Constitution of Nepal, answer the question accordingly. 
 If you don't know the answer, just say that you don't know, don't try to make up an answer.
 
 Context: {context}
@@ -47,7 +55,7 @@ embeddings = HuggingFaceBgeEmbeddings(
 )
 
 
-prompt = PromptTemplate(template=prompt_template, input_variables=['context', 'question'])
+prompt = langchain_core.prompts.PromptTemplate(template=prompt_template, input_variables=['context', 'question'])
 
 load_vector_store = Chroma(persist_directory="stored/nepdata", embedding_function=embeddings)
 
@@ -72,9 +80,11 @@ def get_response():
     )
     response = qa(query)
     answer = response['result']
-    source_document = response['source_documents'][0].page_content
-    doc = response['source_documents'][0].metadata['source']
-    response_data = {"answer": answer, "source_document": source_document, "doc": doc}
+    # source_document = response['source_documents'][0].page_content
+    # doc = response['source_documents'][0].metadata['source']
+    response_data = {"answer": answer}
+    # response_data = {"answer": answer, "source_document": source_document, "doc": doc}
+
     
     return jsonify(response_data)
 

@@ -1,9 +1,8 @@
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceBgeEmbeddings
-from langchain.document_loaders import DirectoryLoader
-from langchain.document_loaders import PyPDFLoader
+from langchain_chroma import Chroma
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
 
 model_name = "BAAI/bge-large-en"
 model_kwargs = {'device': 'cpu'}
@@ -16,7 +15,7 @@ embeddings = HuggingFaceBgeEmbeddings(
 
 
 
-loader= PyPDFLoader("C:\\Users\Binayak K\\Desktop\\Random projects\\nepal kanun\\nepallife.pdf")
+loader= PyPDFLoader("C:/Users/binay/Desktop/Freelancing/Sandesh/Kanun_GPT/part1.pdf")
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
 texts = text_splitter.split_documents(documents)
